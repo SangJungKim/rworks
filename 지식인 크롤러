@@ -1,0 +1,50 @@
+#:::::::::::디렉토리 설정하기::::::::::::::::::#
+setwd("~/Documents/R Directory/NaverIN")
+#:::::::::::라이브러리 불러오기::::::::::::::::#
+library("xml2")
+library("rvest")
+
+#:::::::::::네이버지식IN 크롤러::::::::::::::::#
+
+#:::::::::::게시판 url:::::::::::::::::::::::::#
+url_base = 'https://kin.naver.com/search/list.nhn?query=연애&cs=utf8&page='
+
+#:::::::::::저장할 변수 만들기:::::::::::::::::#
+
+#질문 제목#
+all.titles = c()
+
+#질문 내용#
+all.contents = c()
+
+#작성일#
+all.time = c()
+
+?read_html#xml2
+?html_nodes#rvest
+?html_attr#rvest
+#:::::::::::지식인 크롤러 만들기::::::::::::::#
+
+for(i in 1:10){
+  url <- paste(url_base,i,sep='') #베이스 url 붙이기
+  htxt <- read_html(url, options = "HUGE") #html읽어들이기 
+  title.links = html_nodes(htxt, '.basic1 dt a') #html 내에 링크 불러들이기
+  article.links = html_attr(title.links, 'href') #html 내에 링크리스트 저장하기
+  for(link in article.links){
+    h = read_html(link)
+    title <- html_text(html_nodes(h,'.c-heading__title')) #링크 내에 질문 제목 불러들이기
+    content <- html_text(html_nodes(h,'.c-heading__content')) #링크 내에 질문 내용 불러들이기
+    if (length(content) == 0){
+      content <- html_text(html_nodes(h, '.c-heading__title')) #질문 내용이 없으면 질문 제목 불러들이기(제목과 내용 붙어있는 경우)
+    }
+    time <- html_text(html_nodes(h, '.c-userinfo__date')) #링크 내에 작성일 불러들이기
+    all.titles <- c(all.titles, title) #질문 제목 리스트 저장하기
+    all.contents <- c(all.contents, content) #질문 내용 리스트 저장하기
+    all.time <- c(all.time, time) #작성일 리스트 저장하기
+    print(link) #링크 리스트 r에서 보이게 하기
+  }
+}
+
+result <- data.frame(all.titles, all.contents, all.time) #질문 제목, 내용, 작성일 순으로 데이터 프레임 만들기
+
+write.csv(result, "네이버 지식인 연애.csv") #파일 쓰기
