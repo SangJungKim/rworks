@@ -48,3 +48,9 @@ for(i in 1:10){
 result <- data.frame(all.titles, all.contents, all.time) #질문 제목, 내용, 작성일 순으로 데이터 프레임 만들기
 
 write.csv(result, "네이버 지식인 연애.csv") #파일 쓰기
+
+#:::::::::::참고 블로그::::::::::::::::::::::#
+
+# https://m.blog.naver.com/PostView.nhn?blogId=kkhh4&logNo=220502721423&proxyReferer=https%3A%2F%2Fwww.google.com%2F
+
+# https://stat-and-news-by-daragon9.tistory.com/104
